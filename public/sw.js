@@ -3,7 +3,7 @@
  * - 페이지 이동: network-first, 오프라인이면 캐시된 화면
  * - 도우미는 기기 안에서 동작하므로 서버 API가 없습니다
  */
-const VERSION = "v4";
+const VERSION = "v5";
 const STATIC_CACHE = `fcqb-static-${VERSION}`;
 const PAGE_CACHE = `fcqb-pages-${VERSION}`;
 const PRECACHE = ["/", "/quiz/1", "/quiz/2", "/quiz/3"];
@@ -17,7 +17,7 @@ async function precache() {
   for (const path of PRECACHE) {
     try {
       const res = await fetch(path, { cache: "no-store" });
-      if (!res.ok) continue;
+      if (!res.ok || res.redirected) continue; // 로그인 전이면 저장하지 않음
       const html = await res.clone().text();
       await pages.put(path, res);
       for (const m of html.matchAll(ASSET_PATTERN)) assets.add(m[0]);
@@ -66,7 +66,7 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(request)
         .then((res) => {
-          if (res.ok) caches.open(PAGE_CACHE).then((cache) => cache.put(request, res.clone()));
+          if (res.ok && !res.redirected) caches.open(PAGE_CACHE).then((cache) => cache.put(request, res.clone()));
           return res;
         })
         .catch(async () => (await caches.match(request)) || (await caches.match("/")) || Response.error()),
