@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 import { FactGuardChat } from "@/components/chat/FactGuardChat";
 import { QUIZ_MODES, useQuizMode } from "@/hooks/useQuizMode";
@@ -11,19 +12,40 @@ import { CheerToast } from "./CheerToast";
 import { QuestionCard } from "./QuestionCard";
 import { QuizHeader } from "./QuizHeader";
 import { QuizNav } from "./QuizNav";
+import { ResetNotice } from "./ResetNotice";
 import { ResultPanel } from "./ResultPanel";
+import { ReviewPanel } from "./ReviewPanel";
+
+const RESET_NOTICE_MS = 1300;
 
 export function QuizClient({ part }: { part: Part }) {
   const { mode } = useQuizMode();
   const s = useQuizSession(part.part, part.questions, mode);
   const answered = s.selected !== undefined;
+  const router = useRouter();
+  const [reviewing, setReviewing] = useState(false);
+  const [resetting, setResetting] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0 });
-  }, [s.current.id, s.finished]);
+  }, [s.current.id, s.finished, reviewing]);
+
+  // 초기화 안내를 잠깐 보여 준 뒤 메인으로 이동
+  useEffect(() => {
+    if (!resetting) return;
+    const timer = window.setTimeout(() => router.replace("/"), RESET_NOTICE_MS);
+    return () => window.clearTimeout(timer);
+  }, [resetting, router]);
+
+  const { restart } = s;
+  const reset = useCallback(() => {
+    restart();
+    setResetting(true);
+  }, [restart]);
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-4 pb-[max(env(safe-area-inset-bottom),1.5rem)]">
+      {resetting && <ResetNotice />}
       <CheerToast answered={s.stats.answered} ready={s.hydrated} />
       <QuizHeader
         partNo={part.part}
@@ -43,14 +65,20 @@ export function QuizClient({ part }: { part: Part }) {
             <div key={i} className="h-14 animate-pulse rounded-2xl bg-post-soft/70" />
           ))}
         </div>
+      ) : s.finished && reviewing ? (
+        <ReviewPanel questions={part.questions} picks={s.picks} onBack={() => setReviewing(false)} />
       ) : s.finished ? (
         <ResultPanel
           total={part.questions.length}
           answered={s.stats.answered}
           correct={s.stats.correct}
           wrongCount={s.stats.wrongIds.length}
-          onRetryWrong={s.retryWrong}
-          onRestart={s.restart}
+          onRetryWrong={() => {
+            setReviewing(false);
+            s.retryWrong();
+          }}
+          onRestart={reset}
+          onReview={() => setReviewing(true)}
         />
       ) : (
         <div className="mt-5 flex flex-col gap-5">

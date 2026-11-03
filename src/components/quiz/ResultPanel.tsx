@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import { Mascot } from "@/components/brand/Mascot";
 
 interface Props {
@@ -9,6 +7,7 @@ interface Props {
   wrongCount: number;
   onRetryWrong: () => void;
   onRestart: () => void;
+  onReview: () => void;
 }
 
 function cheer(rate: number) {
@@ -17,7 +16,7 @@ function cheer(rate: number) {
   return { mood: "think" as const, text: "괜찮아요, 오답을 다시 풀면 금방 올라가요!" };
 }
 
-export function ResultPanel({ total, answered, correct, wrongCount, onRetryWrong, onRestart }: Props) {
+export function ResultPanel({ total, answered, correct, wrongCount, onRetryWrong, onRestart, onReview }: Props) {
   const rate = answered > 0 ? Math.round((correct / answered) * 100) : 0;
   const unanswered = total - answered;
   const { mood, text } = cheer(rate);
@@ -57,11 +56,11 @@ export function ResultPanel({ total, answered, correct, wrongCount, onRetryWrong
         <button type="button" onClick={onRestart} className="btn-ghost flex-1 py-3.5 text-sm" aria-label="초기화하고 1번부터 다시 풀기">
           🔄 초기화
         </button>
-        <Link href="/" className="btn-ghost flex-1 py-3.5 text-center text-sm">
-          파트 목록
-        </Link>
+        <button type="button" onClick={onReview} disabled={answered === 0} className="btn-ghost flex-1 py-3.5 text-sm">
+          📝 풀이 확인
+        </button>
       </div>
-      <p className="-mt-1 text-center text-[11px] text-ink-mute">초기화하면 이 PART의 풀이 기록을 지우고 1번부터 다시 풀어요.</p>
+      <p className="-mt-1 text-center text-[11px] text-ink-mute">초기화하면 이 PART의 풀이 기록을 지우고 처음 화면으로 돌아가요.</p>
     </section>
   );
 }

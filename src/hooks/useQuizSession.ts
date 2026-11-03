@@ -141,6 +141,7 @@ export function useQuizSession(partNo: number, questions: Question[], mode: Quiz
     isReview: order.length !== questions.length,
     finished,
     stats,
+    picks,
     select,
     confirm,
     next,
