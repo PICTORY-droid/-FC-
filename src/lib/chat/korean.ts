@@ -1,16 +1,18 @@
 /** Small Korean text helpers for natural-sounding template replies. */
 
-function hasFinalConsonant(word: string): boolean {
-  const last = word.trim().replace(/[\s'"’‘)\]]+$/, "").slice(-1);
-  const code = last.charCodeAt(0);
-  if (code >= 0xac00 && code <= 0xd7a3) return (code - 0xac00) % 28 !== 0;
-  if (/[0-9]/.test(last)) return "013678".includes(last); // 영, 일, 삼, 육, 칠, 팔
-  return false;
-}
+import { josa as pickJosa } from "es-hangul";
 
-/** Attach the right particle: josa("정답", "은", "는") → "정답은" */
-export function josa(word: string, withFinal: string, withoutFinal: string): string {
-  return `${word}${hasFinalConsonant(word) ? withFinal : withoutFinal}`;
+type JosaPair = Parameters<typeof pickJosa>[1];
+
+/**
+ * Particle (조사) selection via es-hangul (Toss, MIT): josa("정답", "은/는") → "정답은".
+ * es-hangul reads the very last character, so trailing quotes/brackets are set aside
+ * first: josa("'사회보험'", "이에요/예요") → "'사회보험'이에요".
+ */
+export function josa(word: string, pair: JosaPair): string {
+  const [, base = "", tail = ""] = /^(.*?)(['"’‘)\]]*)$/.exec(word) ?? [];
+  if (!base) return word;
+  return `${word}${pickJosa(base, pair).slice(base.length)}`;
 }
 
 /** Space-insensitive comparison key. */

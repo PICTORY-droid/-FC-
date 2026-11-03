@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { loadGlossary } from "@/lib/chat/glossary";
+import { loadKnowledge } from "@/lib/chat/glossary";
 import { replyTo } from "@/lib/chat/rule-engine";
 import { MESSAGE_MAX_LENGTH, sanitizeText } from "@/lib/chat/sanitize";
 import type { ChatTurn } from "@/types/chat";
@@ -37,12 +37,12 @@ export function useFactChat(question: Question, answered: boolean) {
       setError(null);
 
       try {
-        const [glossary] = await Promise.all([
-          loadGlossary(),
+        const [knowledge] = await Promise.all([
+          loadKnowledge(),
           new Promise((r) => setTimeout(r, TYPING_DELAY_MS)),
         ]);
         if (run !== runRef.current) return false;
-        const answer = replyTo({ message, question, answered, glossary });
+        const answer = replyTo({ message, question, answered, knowledge });
         setTurns((prev) => [...prev, { role: "assistant", text: answer }]);
         setStatus("idle");
         return true;
