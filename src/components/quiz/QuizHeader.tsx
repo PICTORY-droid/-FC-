@@ -8,9 +8,10 @@ interface Props {
   correct: number;
   answered: number;
   isReview: boolean;
+  modeLabel: string;
 }
 
-export function QuizHeader({ partNo, title, position, total, correct, answered, isReview }: Props) {
+export function QuizHeader({ partNo, title, position, total, correct, answered, isReview, modeLabel }: Props) {
   return (
     <header className="sticky top-0 z-10 -mx-4 bg-canvas/95 px-4 pb-3 pt-[max(env(safe-area-inset-top),0.75rem)] backdrop-blur">
       <div className="flex items-center justify-between">
@@ -19,6 +20,7 @@ export function QuizHeader({ partNo, title, position, total, correct, answered, 
         </Link>
         <div className="flex items-center gap-1.5">
           {isReview && <span className="chip bg-signal-soft text-signal">오답 다시풀기</span>}
+          <span className="chip bg-sunny-soft text-ink-soft">{modeLabel}</span>
           <span className="chip bg-post-soft text-post">PART {partNo}</span>
         </div>
       </div>

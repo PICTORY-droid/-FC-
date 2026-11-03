@@ -10,6 +10,12 @@ import { readJson, writeJson } from "@/lib/storage/safe-storage";
  */
 export type QuizMode = "auto" | "manual";
 
+/** Labels shared by the home picker and the in-quiz badge. */
+export const QUIZ_MODES: Record<QuizMode, { label: string; description: string }> = {
+  auto: { label: "바로 채점", description: "선지를 누르면 바로 정답을 알려드려요." },
+  manual: { label: "직접 확인", description: "여러 번 바꿔 골라 보고 '정답 확인'을 눌러요." },
+};
+
 const MODE_KEY = "pqb:mode:v1";
 
 /** Grading-mode preference, remembered on this device for every part. */

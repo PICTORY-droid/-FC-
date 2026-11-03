@@ -3,18 +3,17 @@
 import { useEffect } from "react";
 
 import { FactGuardChat } from "@/components/chat/FactGuardChat";
-import { useQuizMode } from "@/hooks/useQuizMode";
+import { QUIZ_MODES, useQuizMode } from "@/hooks/useQuizMode";
 import { useQuizSession } from "@/hooks/useQuizSession";
 import type { Part } from "@/types/question";
 
-import { ModeToggle } from "./ModeToggle";
 import { QuestionCard } from "./QuestionCard";
 import { QuizHeader } from "./QuizHeader";
 import { QuizNav } from "./QuizNav";
 import { ResultPanel } from "./ResultPanel";
 
 export function QuizClient({ part }: { part: Part }) {
-  const { mode, setMode } = useQuizMode();
+  const { mode } = useQuizMode();
   const s = useQuizSession(part.part, part.questions, mode);
   const answered = s.selected !== undefined;
 
@@ -32,6 +31,7 @@ export function QuizClient({ part }: { part: Part }) {
         correct={s.stats.correct}
         answered={s.stats.answered}
         isReview={s.isReview}
+        modeLabel={QUIZ_MODES[mode].label}
       />
 
       {!s.hydrated ? (
@@ -51,8 +51,7 @@ export function QuizClient({ part }: { part: Part }) {
           onRestart={s.restart}
         />
       ) : (
-        <div className="mt-4 flex flex-col gap-5">
-          <ModeToggle mode={mode} onChange={setMode} />
+        <div className="mt-5 flex flex-col gap-5">
           <QuestionCard question={s.current} selected={s.selected} pending={s.draft} onSelect={s.select} />
           <QuizNav
             canPrev={s.position > 1}

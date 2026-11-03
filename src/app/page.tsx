@@ -1,4 +1,5 @@
 import { Mascot } from "@/components/brand/Mascot";
+import { ModePicker } from "@/components/home/ModePicker";
 import { PartCard } from "@/components/home/PartCard";
 import { InstallAppCard } from "@/components/pwa/InstallAppCard";
 import { getSource, listParts } from "@/lib/question-bank/repository";
@@ -22,6 +23,8 @@ export default function HomePage() {
       </header>
 
       <InstallAppCard />
+
+      <ModePicker />
 
       <section aria-label="파트 선택" className="flex flex-col gap-3">
         {parts.map((p) => (
