@@ -8,7 +8,7 @@ interface Props {
 
 const INK = "#3b2a20";
 
-/** 편지봉투 캐릭터 '우편이' — FC 문제은행 전용 마스코트 (원본 디자인). */
+/** 편지봉투 캐릭터 '누리' — FC 문제은행 전용 마스코트 (원본 디자인). */
 export function Mascot({ size = 48, mood = "happy", className }: Props) {
   const eyes =
     mood === "happy" ? (

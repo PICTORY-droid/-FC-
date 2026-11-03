@@ -34,24 +34,24 @@ export function FactGuardChat({ question, answered }: Props) {
   };
 
   return (
-    <section ref={zoneRef} aria-label="우편이 도우미" className="card flex flex-col gap-3 p-4">
+    <section ref={zoneRef} aria-label="누리 도우미" className="card flex flex-col gap-3 p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Mascot size={34} mood={loading ? "think" : "happy"} />
           <div>
-            <h3 className="font-cute text-[15px] leading-none text-ink">우편이 도우미</h3>
+            <h3 className="font-cute text-[15px] leading-none text-ink">누리 도우미</h3>
             <p className="mt-0.5 text-[10px] text-ink-mute">교재 내용으로만 답해요</p>
           </div>
         </div>
-        <span className="chip bg-correct-soft text-correct">📖 교재 기반</span>
+        <span className="chip bg-correct-soft text-correct">교재 기반</span>
       </div>
 
       <div className="flex flex-col gap-2 text-[13px] leading-relaxed" aria-live="polite">
         {turns.length === 0 && (
           <p className="rounded-2xl rounded-tl-sm bg-post-soft p-3 text-ink-soft">
             {answered
-              ? "왜 이 선지가 정답인지, 다른 선지는 왜 틀렸는지, 용어 뜻을 물어보세요! 교재 문장 그대로 알려드릴게요 💌"
-              : "아직 답을 고르지 않으셨네요. 정답 대신 힌트를 드릴게요 ✉️"}
+              ? "왜 이 선지가 정답인지, 다른 선지는 왜 틀렸는지, 용어 뜻을 물어보세요! 교재 문장 그대로 알려드릴게요."
+              : "아직 답을 고르지 않으셨네요. 정답 대신 힌트를 드릴게요."}
           </p>
         )}
         {turns.map((t, i) =>
@@ -69,7 +69,7 @@ export function FactGuardChat({ question, answered }: Props) {
         {loading && (
           <div className="mr-6 flex items-center gap-2">
             <Mascot size={26} mood="think" className="shrink-0" />
-            <p className="rounded-2xl rounded-tl-sm bg-post-soft px-3 py-2 text-ink-mute">교재를 펼쳐 보는 중… 📖</p>
+            <p className="rounded-2xl rounded-tl-sm bg-post-soft px-3 py-2 text-ink-mute">교재를 펼쳐 보는 중…</p>
           </div>
         )}
         {error && (
@@ -121,7 +121,7 @@ export function FactGuardChat({ question, answered }: Props) {
         </button>
       </form>
       <p className="text-[10px] leading-snug text-ink-mute">
-        우편이는 인터넷 없이 이 기기 안에서 교재 문장을 찾아 답해요. 개인정보는 입력하지 마세요.
+        누리는 인터넷 없이 이 기기 안에서 교재 문장을 찾아 답해요. 개인정보는 입력하지 마세요.
       </p>
     </section>
   );

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { Mascot } from "@/components/brand/Mascot";
 import { useInstallPrompt } from "@/hooks/useInstallPrompt";
 
 export function InstallAppCard() {
@@ -18,7 +19,9 @@ export function InstallAppCard() {
   return (
     <section className="mb-5 rounded-[var(--radius-card)] border-[1.5px] border-sunny bg-sunny-soft p-4">
       <div className="flex items-center gap-3">
-        <img src="/icons/icon-192.png" alt="" width={44} height={44} className="size-11 shrink-0 rounded-2xl" />
+        <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-post-soft" aria-hidden>
+          <Mascot size={40} />
+        </span>
         <div className="min-w-0 flex-1">
           <p className="font-cute text-[15px] text-ink">앱으로 설치하기</p>
           <p className="text-xs text-ink-soft">홈 화면에서 바로 열고, 인터넷 없이도 풀 수 있어요.</p>

@@ -18,7 +18,7 @@ export function QuestionCard({ question, selected, onSelect }: Props) {
   return (
     <article className="flex flex-col gap-4">
       <div className="card p-5">
-        <span className="chip bg-sunny-soft text-ink-soft">✉️ 문항 {question.no}</span>
+        <span className="chip bg-sunny-soft text-ink-soft">문항 {question.no}</span>
         <h2 className="mt-3 text-[16px] font-semibold leading-[1.75] tracking-tight text-ink">{question.question}</h2>
       </div>
 
@@ -37,7 +37,7 @@ export function QuestionCard({ question, selected, onSelect }: Props) {
               {correct ? "딩동댕! 정답이에요" : `아쉬워요! 정답은 ${MARKS[question.answer - 1]}`}
             </p>
             <p className="mt-1 text-ink-soft">
-              {question.explanation ?? "교재에 별도 해설이 없는 문항이에요. 궁금한 점은 아래 우편이 도우미에게 물어보세요."}
+              {question.explanation ?? "교재에 별도 해설이 없는 문항이에요. 궁금한 점은 아래 누리 도우미에게 물어보세요."}
             </p>
           </div>
         </section>

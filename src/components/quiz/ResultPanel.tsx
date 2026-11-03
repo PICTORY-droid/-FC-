@@ -12,9 +12,9 @@ interface Props {
 }
 
 function cheer(rate: number) {
-  if (rate >= 90) return { mood: "wow" as const, text: "완벽에 가까워요! 시험장도 문제없어요 🎉" };
+  if (rate >= 90) return { mood: "wow" as const, text: "완벽에 가까워요! 시험장도 문제없어요!" };
   if (rate >= 70) return { mood: "happy" as const, text: "잘하고 있어요! 틀린 문제만 한 번 더 볼까요?" };
-  return { mood: "think" as const, text: "괜찮아요, 오답을 다시 풀면 금방 올라가요 💪" };
+  return { mood: "think" as const, text: "괜찮아요, 오답을 다시 풀면 금방 올라가요!" };
 }
 
 export function ResultPanel({ total, answered, correct, wrongCount, onRetryWrong, onRestart }: Props) {
@@ -51,7 +51,7 @@ export function ResultPanel({ total, answered, correct, wrongCount, onRetryWrong
       </div>
 
       <button type="button" onClick={onRetryWrong} disabled={wrongCount === 0} className="btn-primary py-3.5 text-sm">
-        {wrongCount > 0 ? `틀린 ${wrongCount}문항 다시 풀기` : "틀린 문항이 없어요 🎉"}
+        {wrongCount > 0 ? `틀린 ${wrongCount}문항 다시 풀기` : "틀린 문항이 없어요"}
       </button>
       <div className="flex gap-3">
         <button type="button" onClick={onRestart} className="btn-ghost flex-1 py-3.5 text-sm">

@@ -12,7 +12,7 @@ export function QuizNav({ canPrev, isLast, onPrev, onNext }: Props) {
         이전 문항
       </button>
       <button type="button" onClick={onNext} className="btn-primary flex-1 py-3.5 text-sm">
-        {isLast ? "결과 보기 📮" : "다음 문항 →"}
+        {isLast ? "결과 보기" : "다음 문항 →"}
       </button>
     </nav>
   );

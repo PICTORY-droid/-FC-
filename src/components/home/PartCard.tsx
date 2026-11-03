@@ -3,10 +3,9 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { PartIcon } from "@/components/brand/PartIcon";
 import { progressKey, readJson } from "@/lib/storage/safe-storage";
 import type { PartSummary } from "@/types/question";
-
-const PART_EMOJI: Record<number, string> = { 1: "🌱", 2: "📜", 3: "🧾" };
 
 export function PartCard({ part }: { part: PartSummary }) {
   const [answered, setAnswered] = useState(0);
@@ -21,8 +20,8 @@ export function PartCard({ part }: { part: PartSummary }) {
   return (
     <Link href={`/quiz/${part.part}`} className="card group block p-4 transition-transform active:scale-[0.98]">
       <div className="flex items-center gap-4">
-        <div className="stamp grid size-16 shrink-0 place-items-center bg-post-soft text-[28px]" aria-hidden>
-          {PART_EMOJI[part.part] ?? "✉️"}
+        <div className="stamp grid size-16 shrink-0 place-items-center bg-post-soft" aria-hidden>
+          <PartIcon part={part.part} />
         </div>
         <div className="min-w-0 flex-1">
           <p className="font-cute text-[13px] text-post">PART {part.part}</p>

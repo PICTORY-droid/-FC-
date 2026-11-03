@@ -1,4 +1,4 @@
-"""Generate PWA / home-screen icons (envelope mascot '우편이') into public/icons.
+"""Generate PWA / home-screen icons (envelope mascot '누리') into public/icons.
 
 Usage: python scripts/build_app_icons.py
 Mirrors src/components/brand/Mascot.tsx (64x64 viewBox) so icon and in-app mascot match.

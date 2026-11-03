@@ -124,7 +124,7 @@ export function replyTo({ message, question: q, answered, glossary }: EngineInpu
   const answerQuote = quote(q, q.answer);
 
   if (intent === "greet") {
-    return "안녕하세요! 저는 FC 문제은행 도우미예요 📮 이 문제의 정답 이유, 선지별 설명, 용어 뜻을 교재 내용 그대로 알려드려요.";
+    return "안녕하세요! 저는 우체국 FC 문제은행의 누리 도우미예요 📮 이 문제의 정답 이유, 선지별 설명, 용어 뜻을 교재 내용 그대로 알려드려요.";
   }
 
   if (intent === "term" || (intent === "unknown" && !mentionsQuestion(msg, q))) {

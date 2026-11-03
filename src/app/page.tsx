@@ -12,15 +12,12 @@ export default function HomePage() {
       <header className="mb-6">
         <div className="flex items-center gap-3">
           <Mascot size={56} />
-          <div>
-            <p className="chip bg-post-soft text-post">우체국 FC 학습</p>
-            <h1 className="mt-1 font-cute text-[28px] leading-tight text-post">FC 문제은행</h1>
-          </div>
+          <h1 className="font-cute text-[28px] leading-tight text-post">우체국 FC 문제은행</h1>
         </div>
         <div className="airmail mt-5" aria-hidden />
         <p className="mt-4 text-sm leading-relaxed text-ink-soft">
           교재 원문 그대로 담은 <b className="text-ink">{total}문항</b>이에요. 풀면 바로 채점하고 해설을 보여드려요. 궁금한 건
-          우편이 도우미에게 물어보세요 💌
+          누리 도우미에게 물어보세요 💌
         </p>
       </header>
 

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 
 import { ServiceWorkerRegistrar } from "@/components/pwa/ServiceWorkerRegistrar";
+import { APP_ICONS } from "@/lib/brand/assets";
 
 import "./globals.css";
 
@@ -11,8 +12,8 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
   authors: [{ name: "김서인" }],
   icons: {
-    icon: [{ url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }],
-    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180" }],
+    icon: [{ url: APP_ICONS.any192, sizes: "192x192", type: "image/png" }],
+    apple: [{ url: APP_ICONS.apple180, sizes: "180x180" }],
   },
   appleWebApp: { capable: true, title: "FC 문제은행", statusBarStyle: "default" },
 };

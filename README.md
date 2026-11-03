@@ -1,6 +1,6 @@
 # 우체국 FC 문제은행 (모바일 학습 앱)
 
-『우체국보험 개론 – 성공으로 가는 첫 걸음』(2026.1) Chapter 2 평가시험 문제은행 **240문항**을 휴대폰에서 풀고, 교재 문장 그대로 답하는 **우편이 도우미**에게 질문할 수 있는 앱입니다. 홈 화면에 설치할 수 있고(PWA), 인터넷 없이도 동작합니다.
+『우체국보험 개론 – 성공으로 가는 첫 걸음』(2026.1) Chapter 2 평가시험 문제은행 **240문항**을 휴대폰에서 풀고, 교재 문장 그대로 답하는 **누리 도우미**에게 질문할 수 있는 앱입니다. 홈 화면에 설치할 수 있고(PWA), 인터넷 없이도 동작합니다.
 
 - 제작: 김서인 (PICTORY-droid)
 - 링크: https://fc-bice.vercel.app
@@ -22,7 +22,7 @@ npm run dev   # http://localhost:3000
 
 `main` 브랜치에 push하면 Vercel이 자동으로 배포합니다.
 
-## 우편이 도우미 (규칙 기반, API 없음)
+## 누리 도우미 (규칙 기반, API 없음)
 
 도우미는 휴대폰 안에서 동작합니다. 질문 의도를 파악한 뒤 **교재 데이터 문장만으로** 답을 조립하며, 새로운 사실을 만들어 내지 않습니다.
 
@@ -42,7 +42,7 @@ npm run dev   # http://localhost:3000
 ```
 data/raw/                       교재 판독 원본(문항·정답 분리 JSONL)
 scripts/build_question_bank.py  병합 + 무결성 검증 → src/data/question-bank.json
-scripts/build_app_icons.py      앱 아이콘(우편이) 생성
+scripts/build_app_icons.py      앱 아이콘(누리) 생성
 src/
   app/                 페이지 · manifest
   components/{brand,home,quiz,chat,pwa}   UI
