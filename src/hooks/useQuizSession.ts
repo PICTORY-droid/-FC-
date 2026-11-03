@@ -2,7 +2,15 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { LAST_PART_KEY, progressKey, readJson, removeKey, writeJson, type LastPart } from "@/lib/storage/safe-storage";
+import {
+  LAST_PART_KEY,
+  PROGRESS_CHANGED_EVENT,
+  progressKey,
+  readJson,
+  removeKey,
+  writeJson,
+  type LastPart,
+} from "@/lib/storage/safe-storage";
 import type { OptionNumber, Question } from "@/types/question";
 
 import type { QuizMode } from "./useQuizMode";
@@ -108,8 +116,13 @@ export function useQuizSession(partNo: number, questions: Question[], mode: Quiz
     setFinished(false);
   }, [questions, picks]);
 
+  /** 초기화: 이 PART의 풀이 기록과 '이어풀기' 안내를 지우고 1번부터 다시 */
   const restart = useCallback(() => {
     removeKey(progressKey(partNo));
+    if (readJson<LastPart | null>(LAST_PART_KEY, null)?.part === partNo) removeKey(LAST_PART_KEY);
+    window.dispatchEvent(new Event(PROGRESS_CHANGED_EVENT));
+    window.scrollTo({ top: 0 });
+    setDraft(undefined);
     setPicks({});
     setOrder(questions.map((q) => q.id));
     setCursor(0);

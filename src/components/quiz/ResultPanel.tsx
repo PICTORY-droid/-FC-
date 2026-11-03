@@ -54,13 +54,14 @@ export function ResultPanel({ total, answered, correct, wrongCount, onRetryWrong
         {wrongCount > 0 ? `틀린 ${wrongCount}문항 다시 풀기` : "틀린 문항이 없어요"}
       </button>
       <div className="flex gap-3">
-        <button type="button" onClick={onRestart} className="btn-ghost flex-1 py-3.5 text-sm">
-          처음부터 다시
+        <button type="button" onClick={onRestart} className="btn-ghost flex-1 py-3.5 text-sm" aria-label="초기화하고 1번부터 다시 풀기">
+          🔄 초기화
         </button>
         <Link href="/" className="btn-ghost flex-1 py-3.5 text-center text-sm">
           파트 목록
         </Link>
       </div>
+      <p className="-mt-1 text-center text-[11px] text-ink-mute">초기화하면 이 PART의 풀이 기록을 지우고 1번부터 다시 풀어요.</p>
     </section>
   );
 }
