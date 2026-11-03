@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 
 import { ServiceWorkerRegistrar } from "@/components/pwa/ServiceWorkerRegistrar";
+import { ACCESS_GUARD_SCRIPT } from "@/lib/access/guard-script";
 import { APP_ICONS, SHARE_IMAGE, siteUrl } from "@/lib/brand/assets";
 
 import "./globals.css";
@@ -49,6 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ko">
       <head>
+        <script dangerouslySetInnerHTML={{ __html: ACCESS_GUARD_SCRIPT }} />
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"

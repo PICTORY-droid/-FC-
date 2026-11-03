@@ -1,43 +1,46 @@
 /**
- * Password gate session helpers — Web Crypto only, so they run in both the
- * Edge middleware and Node route handlers.
+ * Device access session: 30 days counted from the moment an invite was used.
  *
- * The password lives only in the APP_PASSWORD environment variable (never in code).
- * The session cookie holds an HMAC derived from it, so changing the password
- * signs everyone out automatically.
+ * Cookie value = "<grantedAtMs>.<hmac>". The signature proves the server issued it,
+ * and the timestamp lets both the middleware and the page guard tell an expired
+ * device apart from one that never entered. A second, readable cookie carries only
+ * the end time so the offline app can lock itself without a server round-trip.
  */
-export const SESSION_COOKIE = "fcqb_session";
-export const SESSION_MAX_AGE = 60 * 60 * 24 * 30; // 30일
+import { signingSecret } from "./config";
+import { hmac, safeEqual, toHex } from "./crypto";
 
-const SESSION_LABEL = "fcqb-session-v1";
-const encoder = new TextEncoder();
+export { ACCESS_UNTIL_COOKIE, SESSION_COOKIE } from "./cookie-names";
 
-export function configuredPassword(): string | null {
-  const value = process.env.APP_PASSWORD?.trim();
-  return value ? value : null;
+const DAY_MS = 24 * 60 * 60 * 1000;
+export const ACCESS_DAYS = 30;
+export const ACCESS_MS = ACCESS_DAYS * DAY_MS;
+/** Cookies outlive the access period so an expired device still sees the "기간 종료" screen. */
+export const COOKIE_MAX_AGE = 90 * 24 * 60 * 60;
+const CLOCK_SKEW_MS = 5 * 60 * 1000;
+
+export type SessionState = { status: "valid"; until: number } | { status: "expired" } | { status: "none" };
+
+async function sign(secret: string, grantedAt: number): Promise<string> {
+  return toHex(await hmac(secret, `session|${grantedAt}`));
 }
 
-async function hmacHex(key: string, message: string): Promise<string> {
-  const cryptoKey = await crypto.subtle.importKey("raw", encoder.encode(key), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  const sig = await crypto.subtle.sign("HMAC", cryptoKey, encoder.encode(message));
-  return Array.from(new Uint8Array(sig), (b) => b.toString(16).padStart(2, "0")).join("");
+export async function createSession(now = Date.now()): Promise<{ value: string; until: number } | null> {
+  const secret = signingSecret("session");
+  if (!secret) return null;
+  return { value: `${now}.${await sign(secret, now)}`, until: now + ACCESS_MS };
 }
 
-/** Constant-time string comparison to avoid timing leaks. */
-export function safeEqual(a: string, b: string): boolean {
-  const aa = encoder.encode(a);
-  const bb = encoder.encode(b);
-  let diff = aa.length ^ bb.length;
-  for (let i = 0; i < Math.max(aa.length, bb.length); i++) diff |= (aa[i] ?? 0) ^ (bb[i] ?? 0);
-  return diff === 0;
-}
+export async function readSession(value: string | undefined, now = Date.now()): Promise<SessionState> {
+  const secret = signingSecret("session");
+  if (!secret || !value) return { status: "none" };
 
-export async function sessionToken(password: string): Promise<string> {
-  return hmacHex(password, SESSION_LABEL);
-}
+  const match = /^(\d{13})\.([0-9a-f]{64})$/.exec(value);
+  if (!match) return { status: "none" };
 
-export async function isValidSession(cookieValue: string | undefined): Promise<boolean> {
-  const password = configuredPassword();
-  if (!password || !cookieValue) return false;
-  return safeEqual(cookieValue, await sessionToken(password));
+  const grantedAt = Number(match[1]);
+  if (!safeEqual(match[2], await sign(secret, grantedAt))) return { status: "none" };
+  if (grantedAt > now + CLOCK_SKEW_MS) return { status: "none" };
+
+  const until = grantedAt + ACCESS_MS;
+  return now < until ? { status: "valid", until } : { status: "expired" };
 }

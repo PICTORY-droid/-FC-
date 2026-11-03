@@ -3,7 +3,7 @@
  * - 페이지 이동: network-first, 오프라인이면 캐시된 화면
  * - 도우미는 기기 안에서 동작하므로 서버 API가 없습니다
  */
-const VERSION = "v7";
+const VERSION = "v8";
 const STATIC_CACHE = `fcqb-static-${VERSION}`;
 const PAGE_CACHE = `fcqb-pages-${VERSION}`;
 const PRECACHE = ["/", "/quiz/1", "/quiz/2", "/quiz/3"];
