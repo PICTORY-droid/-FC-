@@ -62,7 +62,7 @@ export function QuizClient({ part }: { part: Part }) {
             onNext={s.next}
             onConfirm={s.confirm}
           />
-          <FactGuardChat question={s.current} answered={answered} />
+          <FactGuardChat question={s.current} partTitle={part.title} answered={answered} />
         </div>
       )}
     </main>

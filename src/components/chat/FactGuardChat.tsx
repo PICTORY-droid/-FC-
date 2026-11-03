@@ -11,11 +11,12 @@ import type { Question } from "@/types/question";
 
 interface Props {
   question: Question;
+  partTitle: string;
   answered: boolean;
 }
 
-export function FactGuardChat({ question, answered }: Props) {
-  const { turns, status, error, ask } = useFactChat(question, answered);
+export function FactGuardChat({ question, partTitle, answered }: Props) {
+  const { turns, status, error, ask } = useFactChat(question, partTitle, answered);
   const [draft, setDraft] = useState("");
   const zoneRef = useRef<HTMLElement>(null);
   useKeyboardSafeViewport(zoneRef);

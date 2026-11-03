@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { loadKnowledge } from "@/lib/chat/glossary";
 import { replyTo } from "@/lib/chat/rule-engine";
+import { loadTextbook } from "@/lib/chat/textbook";
 import { MESSAGE_MAX_LENGTH, sanitizeText } from "@/lib/chat/sanitize";
 import type { ChatTurn } from "@/types/chat";
 import type { Question } from "@/types/question";
@@ -13,14 +14,17 @@ type Status = "idle" | "loading" | "error";
 const TYPING_DELAY_MS = 350;
 
 /** Conversation state for the on-device, textbook-only helper — scoped to one question. */
-export function useFactChat(question: Question, answered: boolean) {
+export function useFactChat(question: Question, partTitle: string, answered: boolean) {
   const [turns, setTurns] = useState<ChatTurn[]>([]);
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
   const runRef = useRef(0);
+  // 직전에 '어떤 연관이 궁금하세요?'라고 되물은 용어
+  const pendingRef = useRef<string | null>(null);
 
   useEffect(() => {
     runRef.current += 1;
+    pendingRef.current = null;
     setTurns([]);
     setStatus("idle");
     setError(null);
@@ -37,13 +41,15 @@ export function useFactChat(question: Question, answered: boolean) {
       setError(null);
 
       try {
-        const [knowledge] = await Promise.all([
+        const [knowledge, textbook] = await Promise.all([
           loadKnowledge(),
+          loadTextbook(),
           new Promise((r) => setTimeout(r, TYPING_DELAY_MS)),
         ]);
         if (run !== runRef.current) return false;
-        const answer = replyTo({ message, question, answered, knowledge });
-        setTurns((prev) => [...prev, { role: "assistant", text: answer }]);
+        const reply = replyTo({ message, question, partTitle, answered, knowledge, textbook, pendingTopic: pendingRef.current });
+        pendingRef.current = reply.pendingTopic;
+        setTurns((prev) => [...prev, { role: "assistant", text: reply.text }]);
         setStatus("idle");
         return true;
       } catch {
@@ -53,7 +59,7 @@ export function useFactChat(question: Question, answered: boolean) {
         return false;
       }
     },
-    [answered, question, status],
+    [answered, partTitle, question, status],
   );
 
   return { turns, status, error, ask };

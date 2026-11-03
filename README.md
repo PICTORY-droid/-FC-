@@ -31,6 +31,8 @@ npm run dev   # http://localhost:3000
 | 왜 이게 정답이야? | 정답 선지 + 교재 해설 |
 | ②번은 왜 틀려? | 해설 중 ② 부분, 정답 안내 |
 | 사회보장제도가 뭐야? | 교재의 정의 문장("○○란 …", "…을 ○○이라 한다") — 정의 160개 |
+| 연금세법 문제 중 "언더라이팅이 뭐야?" | 교재 본문·용어해설에서 찾아 쪽수와 함께 답하고, 다른 단원이면 "지금 문제와 어떤 연관이 궁금하세요?"라고 되물음 |
+| 이 문제랑 무슨 상관이야? | 두 용어가 함께 나오는 교재 문단(없으면 같은 단원, 그래도 없으면 "직접 연결한 부분은 없어요" + 각각의 설명) |
 | 언더라이팅 알려줘 | 정의가 없으면 그 용어가 나오는 교재 문장 검색(사실 문장 591개, 오타 1글자 허용) |
 | 힌트 줘 (풀기 전) | 오답 선지 하나 제거 + 관련 개념 |
 | 날씨, 주식 등 | 범위 밖 안내 문장 |
@@ -48,6 +50,8 @@ data/raw/                       교재 판독 원본(문항·정답 분리 JSONL
 scripts/build_question_bank.py  병합 + 무결성 검증 → src/data/question-bank.json
 scripts/build_app_icons.py      앱 아이콘(누리) 생성
 scripts/build_og_image.mjs      링크 공유 미리보기 이미지(public/og-image.png) 생성
+data/raw/textbook/*.md          교재 본문 7~110쪽 판독 원본(@part/@page/@term 표시)
+scripts/build_textbook.py       교재 → src/data/textbook.json (문단 518개, 용어해설 68개)
 src/
   app/                 페이지 · manifest
   components/{brand,home,quiz,chat,pwa}   UI
@@ -61,6 +65,10 @@ public/sw.js           오프라인 캐시
 ## 디자인
 
 `src/app/globals.css`의 토큰(주홍 `post`, 민트 `correct`, 햇살 `sunny`, 크림 `canvas`)과 공통 클래스(`card`, `btn-primary`, `btn-ghost`, `chip`, `stamp`, `airmail`)를 모든 화면이 함께 씁니다. 색을 바꾸려면 토큰만 수정하면 됩니다.
+
+## 비밀번호
+
+Vercel 환경변수 `APP_PASSWORD`에 입장 비밀번호를 넣습니다(코드에 쓰지 않음). 미들웨어가 모든 화면을 막고, 맞으면 30일 유지 쿠키를 발급합니다. 5회 틀리면 10분 잠금. 번호를 바꾸면 기존 입장 기록은 자동 해제됩니다.
 
 ## 데이터 수정
 
