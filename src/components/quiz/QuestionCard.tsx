@@ -1,3 +1,4 @@
+import { Mascot } from "@/components/brand/Mascot";
 import type { OptionNumber, Question } from "@/types/question";
 
 import { OptionList } from "./OptionList";
@@ -16,9 +17,9 @@ export function QuestionCard({ question, selected, onSelect }: Props) {
 
   return (
     <article className="flex flex-col gap-4">
-      <div className="rounded-2xl border border-line bg-surface p-5">
-        <p className="text-[11px] font-semibold tracking-[0.16em] text-ink-mute">문항 {question.no}</p>
-        <h2 className="mt-2 text-[16px] font-semibold leading-[1.7] tracking-tight text-ink">{question.question}</h2>
+      <div className="card p-5">
+        <span className="chip bg-sunny-soft text-ink-soft">✉️ 문항 {question.no}</span>
+        <h2 className="mt-3 text-[16px] font-semibold leading-[1.75] tracking-tight text-ink">{question.question}</h2>
       </div>
 
       <OptionList options={question.options} selected={selected} answer={question.answer} onSelect={onSelect} />
@@ -26,14 +27,19 @@ export function QuestionCard({ question, selected, onSelect }: Props) {
       {answered && (
         <section
           aria-live="polite"
-          className={`rounded-xl border-l-[3px] bg-surface px-4 py-3.5 text-sm leading-relaxed ${correct ? "border-correct" : "border-signal"}`}
+          className={`flex gap-3 rounded-[var(--radius-card)] border-[1.5px] p-4 text-sm leading-relaxed ${
+            correct ? "border-correct/40 bg-correct-soft" : "border-signal/30 bg-signal-soft"
+          }`}
         >
-          <p className={`font-bold ${correct ? "text-correct" : "text-signal"}`}>
-            {correct ? "정답입니다" : `오답 · 정답은 ${MARKS[question.answer - 1]}`}
-          </p>
-          <p className="mt-1.5 text-ink-soft">
-            {question.explanation ?? "교재에 별도 해설이 없는 문항입니다. 궁금한 점은 아래 AI 도우미에게 물어보세요."}
-          </p>
+          <Mascot size={40} mood={correct ? "happy" : "sad"} className={`shrink-0 ${correct ? "animate-wiggle" : ""}`} />
+          <div>
+            <p className={`font-cute text-[16px] ${correct ? "text-correct" : "text-signal"}`}>
+              {correct ? "딩동댕! 정답이에요" : `아쉬워요! 정답은 ${MARKS[question.answer - 1]}`}
+            </p>
+            <p className="mt-1 text-ink-soft">
+              {question.explanation ?? "교재에 별도 해설이 없는 문항이에요. 궁금한 점은 아래 우편이 도우미에게 물어보세요."}
+            </p>
+          </div>
         </section>
       )}
     </article>

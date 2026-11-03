@@ -10,10 +10,16 @@ interface Props {
 }
 
 function tone(n: OptionNumber, selected: OptionNumber | undefined, answer: OptionNumber) {
-  if (selected === undefined) return "border-line bg-surface text-ink hover:border-post/50 active:bg-post-soft/50";
+  if (selected === undefined) return "border-line bg-surface text-ink hover:border-post/50 active:bg-post-soft";
   if (n === answer) return "border-correct bg-correct-soft text-ink";
   if (n === selected) return "border-signal bg-signal-soft text-ink";
   return "border-line bg-surface text-ink-mute";
+}
+
+function badgeTone(isAnswer: boolean, isWrongPick: boolean) {
+  if (isAnswer) return "bg-correct text-white";
+  if (isWrongPick) return "bg-signal text-white";
+  return "bg-post-soft text-post";
 }
 
 export function OptionList({ options, selected, answer, onSelect }: Props) {
@@ -33,14 +39,12 @@ export function OptionList({ options, selected, answer, onSelect }: Props) {
               aria-checked={selected === n}
               disabled={locked}
               onClick={() => onSelect(n)}
-              className={`flex w-full items-start gap-3 rounded-xl border px-4 py-3.5 text-left text-[15px] leading-relaxed transition-colors disabled:cursor-default ${tone(n, selected, answer)}`}
+              className={`flex w-full items-start gap-3 rounded-2xl border-[1.5px] px-4 py-3.5 text-left text-[15px] leading-relaxed transition-colors disabled:cursor-default ${tone(n, selected, answer)}`}
             >
-              <span className={`mt-px shrink-0 text-base font-semibold ${isAnswer ? "text-correct" : isWrongPick ? "text-signal" : "text-post"}`}>
-                {MARKS[i]}
+              <span className={`grid size-7 shrink-0 place-items-center rounded-full text-sm font-bold ${badgeTone(isAnswer, isWrongPick)}`}>
+                {isAnswer ? "✓" : isWrongPick ? "✕" : MARKS[i]}
               </span>
-              <span className="flex-1">{text}</span>
-              {isAnswer && <span className="mt-0.5 shrink-0 text-[11px] font-bold text-correct">정답</span>}
-              {isWrongPick && <span className="mt-0.5 shrink-0 text-[11px] font-bold text-signal">선택</span>}
+              <span className="flex-1 pt-0.5">{text}</span>
             </button>
           </li>
         );

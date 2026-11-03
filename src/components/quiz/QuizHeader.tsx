@@ -12,23 +12,30 @@ interface Props {
 
 export function QuizHeader({ partNo, title, position, total, correct, answered, isReview }: Props) {
   return (
-    <header className="sticky top-0 z-10 -mx-4 border-b border-line/70 bg-canvas/90 px-4 pb-3 pt-[max(env(safe-area-inset-top),0.75rem)] backdrop-blur">
+    <header className="sticky top-0 z-10 -mx-4 bg-canvas/95 px-4 pb-3 pt-[max(env(safe-area-inset-top),0.75rem)] backdrop-blur">
       <div className="flex items-center justify-between">
-        <Link href="/" className="-ml-1 rounded-lg px-1 py-1 text-sm font-medium text-ink-soft hover:text-post" aria-label="파트 목록으로">
+        <Link href="/" className="btn-ghost px-3 py-1.5 text-xs" aria-label="파트 목록으로">
           ← 목록
         </Link>
-        <p className="text-[11px] font-semibold tracking-[0.16em] text-post">
-          PART {partNo} {isReview && <span className="ml-1 text-signal">· 오답 다시풀기</span>}
-        </p>
+        <div className="flex items-center gap-1.5">
+          {isReview && <span className="chip bg-signal-soft text-signal">오답 다시풀기</span>}
+          <span className="chip bg-post-soft text-post">PART {partNo}</span>
+        </div>
       </div>
-      <div className="mt-2 flex items-end justify-between gap-3">
-        <h1 className="truncate text-[15px] font-bold tracking-tight text-ink">{title}</h1>
+      <div className="mt-2.5 flex items-end justify-between gap-3">
+        <h1 className="truncate font-cute text-[18px] text-ink">{title}</h1>
         <p className="shrink-0 text-xs tabular-nums text-ink-mute">
-          <span className="font-bold text-ink">{position}</span> / {total}
-          {answered > 0 && <span className="ml-2">정답 {correct}</span>}
+          <span className="font-bold text-post">{position}</span> / {total}
+          {answered > 0 && <span className="chip ml-2 bg-correct-soft text-correct">정답 {correct}</span>}
         </p>
       </div>
-      <div className="mt-2 h-[3px] overflow-hidden rounded-full bg-line/60" role="progressbar" aria-valuemin={1} aria-valuemax={total} aria-valuenow={position}>
+      <div
+        className="mt-2.5 h-2 overflow-hidden rounded-full bg-post-soft"
+        role="progressbar"
+        aria-valuemin={1}
+        aria-valuemax={total}
+        aria-valuenow={position}
+      >
         <div className="h-full rounded-full bg-post transition-[width] duration-300" style={{ width: `${(position / total) * 100}%` }} />
       </div>
     </header>

@@ -1,27 +1,39 @@
 @import "tailwindcss";
 
+/* ──────────────────────────────────────────────
+   FC 문제은행 디자인 토큰 — 귀여운 우체국 감성
+   모든 화면은 아래 토큰만 사용합니다. (색을 컴포넌트에 직접 쓰지 않기)
+   ────────────────────────────────────────────── */
 @theme {
   --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
     "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --font-cute: "Jua", "Pretendard Variable", Pretendard, sans-serif;
 
-  /* Post identity */
-  --color-post: #0054a6;
-  --color-post-deep: #003f7d;
-  --color-post-soft: #eaf2fb;
-  --color-signal: #e50012;
-  --color-signal-soft: #fdecee;
+  /* 브랜드: 우체국 주홍 */
+  --color-post: #e8541e;
+  --color-post-deep: #c8431a;
+  --color-post-soft: #fff0e7;
 
-  /* Neutral canvas */
-  --color-canvas: #f6f7f9;
+  /* 보조: 민트(정답·안내) · 햇살(포인트) */
+  --color-correct: #1f8a5b;
+  --color-correct-soft: #e5f6ed;
+  --color-sunny: #ffc94d;
+  --color-sunny-soft: #fff6dc;
+
+  /* 오답 */
+  --color-signal: #d9363e;
+  --color-signal-soft: #fdeced;
+
+  /* 바탕 · 글자 (따뜻한 크림 & 브라운) */
+  --color-canvas: #fff8f1;
   --color-surface: #ffffff;
-  --color-line: #e3e6eb;
-  --color-ink: #14171c;
-  --color-ink-soft: #4a515c;
-  --color-ink-mute: #8a919c;
+  --color-line: #f1e1d3;
+  --color-ink: #3b2a20;
+  --color-ink-soft: #6e5648;
+  --color-ink-mute: #a68f80;
 
-  /* Feedback */
-  --color-correct: #0f7a4f;
-  --color-correct-soft: #e7f5ee;
+  --radius-card: 1.5rem;
+  --shadow-soft: 0 6px 20px -8px rgb(232 84 30 / 0.18);
 }
 
 @layer base {
@@ -33,7 +45,6 @@
     background: var(--color-canvas);
     color: var(--color-ink);
     font-family: var(--font-sans);
-    font-feature-settings: "ss06";
     word-break: keep-all;
     overflow-wrap: anywhere;
   }
@@ -41,6 +52,94 @@
     outline: 2px solid var(--color-post);
     outline-offset: 2px;
   }
+}
+
+@layer components {
+  /* 카드 공통 */
+  .card {
+    border-radius: var(--radius-card);
+    border: 1.5px solid var(--color-line);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-soft);
+  }
+  /* 항공우편 줄무늬 띠 */
+  .airmail {
+    height: 6px;
+    border-radius: 999px;
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--color-post) 0 10px,
+      var(--color-surface) 10px 16px,
+      var(--color-correct) 16px 26px,
+      var(--color-surface) 26px 32px
+    );
+  }
+  /* 우표 테두리 (점선) */
+  .stamp {
+    border: 2px dashed color-mix(in srgb, var(--color-post) 35%, transparent);
+    border-radius: 1rem;
+  }
+  /* 주 버튼 / 보조 버튼 */
+  .btn-primary {
+    border-radius: 1rem;
+    background: var(--color-post);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 4px 0 var(--color-post-deep);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+  }
+  .btn-primary:hover {
+    background: var(--color-post-deep);
+  }
+  .btn-primary:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 var(--color-post-deep);
+  }
+  .btn-primary:disabled {
+    background: var(--color-ink-mute);
+    box-shadow: none;
+    transform: none;
+  }
+  .btn-ghost {
+    border-radius: 1rem;
+    border: 1.5px solid var(--color-line);
+    background: var(--color-surface);
+    color: var(--color-ink-soft);
+    font-weight: 700;
+    transition: background 0.12s ease;
+  }
+  .btn-ghost:active {
+    background: var(--color-post-soft);
+  }
+  .btn-ghost:disabled {
+    opacity: 0.45;
+  }
+  /* 작은 라벨 */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border-radius: 999px;
+    padding: 0.2rem 0.6rem;
+    font-size: 11px;
+    font-weight: 700;
+  }
+}
+
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-6deg);
+  }
+  75% {
+    transform: rotate(6deg);
+  }
+}
+.animate-wiggle {
+  animation: wiggle 0.6s ease-in-out;
 }
 
 @media (prefers-reduced-motion: reduce) {

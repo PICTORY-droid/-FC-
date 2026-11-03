@@ -32,9 +32,9 @@ export function QuizClient({ part }: { part: Part }) {
 
       {!s.hydrated ? (
         <div className="mt-5 flex flex-col gap-3" aria-busy="true">
-          <div className="h-28 animate-pulse rounded-2xl bg-line/50" />
+          <div className="h-28 animate-pulse rounded-[var(--radius-card)] bg-post-soft" />
           {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="h-14 animate-pulse rounded-xl bg-line/40" />
+            <div key={i} className="h-14 animate-pulse rounded-2xl bg-post-soft/70" />
           ))}
         </div>
       ) : s.finished ? (
@@ -50,7 +50,7 @@ export function QuizClient({ part }: { part: Part }) {
         <div className="mt-5 flex flex-col gap-5">
           <QuestionCard question={s.current} selected={s.selected} onSelect={s.select} />
           <QuizNav canPrev={s.position > 1} isLast={s.position === s.total} onPrev={s.prev} onNext={s.next} />
-          <FactGuardChat questionId={s.current.id} answered={s.selected !== undefined} />
+          <FactGuardChat question={s.current} answered={s.selected !== undefined} />
         </div>
       )}
     </main>

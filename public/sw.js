@@ -1,9 +1,9 @@
 /* 우체국 FC 문제은행 service worker
  * - 정적 자산(/_next/static, /icons): cache-first
  * - 페이지 이동: network-first, 오프라인이면 캐시된 화면
- * - /api/*: 캐시하지 않음 (AI 답변은 항상 서버에서)
+ * - 도우미는 기기 안에서 동작하므로 서버 API가 없습니다
  */
-const VERSION = "v2";
+const VERSION = "v3";
 const STATIC_CACHE = `fcqb-static-${VERSION}`;
 const PAGE_CACHE = `fcqb-pages-${VERSION}`;
 const PRECACHE = ["/", "/quiz/1", "/quiz/2", "/quiz/3"];

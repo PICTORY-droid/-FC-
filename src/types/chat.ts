@@ -5,21 +5,10 @@ export interface ChatTurn {
   text: string;
 }
 
-/** Request DTO for POST /api/chat. The server resolves question content itself from questionId. */
-export interface ChatRequestDto {
+/** A fact sentence rebuilt from a fill-in-the-blank question and its official answer. */
+export interface GlossaryEntry {
+  term: string;
+  sentence: string;
   questionId: string;
-  message: string;
-  answered: boolean;
-  history: ChatTurn[];
+  source: string;
 }
-
-export type ChatErrorCode =
-  | "INVALID_INPUT"
-  | "NOT_FOUND"
-  | "RATE_LIMITED"
-  | "AI_UNAVAILABLE"
-  | "INTERNAL";
-
-export type ChatResponseDto =
-  | { ok: true; answer: string; outOfScope: boolean }
-  | { ok: false; error: { code: ChatErrorCode; message: string } };
