@@ -3,16 +3,20 @@
 import { useEffect } from "react";
 
 import { FactGuardChat } from "@/components/chat/FactGuardChat";
+import { useQuizMode } from "@/hooks/useQuizMode";
 import { useQuizSession } from "@/hooks/useQuizSession";
 import type { Part } from "@/types/question";
 
+import { ModeToggle } from "./ModeToggle";
 import { QuestionCard } from "./QuestionCard";
 import { QuizHeader } from "./QuizHeader";
 import { QuizNav } from "./QuizNav";
 import { ResultPanel } from "./ResultPanel";
 
 export function QuizClient({ part }: { part: Part }) {
-  const s = useQuizSession(part.part, part.questions);
+  const { mode, setMode } = useQuizMode();
+  const s = useQuizSession(part.part, part.questions, mode);
+  const answered = s.selected !== undefined;
 
   useEffect(() => {
     window.scrollTo({ top: 0 });
@@ -47,10 +51,19 @@ export function QuizClient({ part }: { part: Part }) {
           onRestart={s.restart}
         />
       ) : (
-        <div className="mt-5 flex flex-col gap-5">
-          <QuestionCard question={s.current} selected={s.selected} onSelect={s.select} />
-          <QuizNav canPrev={s.position > 1} isLast={s.position === s.total} onPrev={s.prev} onNext={s.next} />
-          <FactGuardChat question={s.current} answered={s.selected !== undefined} />
+        <div className="mt-4 flex flex-col gap-5">
+          <ModeToggle mode={mode} onChange={setMode} />
+          <QuestionCard question={s.current} selected={s.selected} pending={s.draft} onSelect={s.select} />
+          <QuizNav
+            canPrev={s.position > 1}
+            isLast={s.position === s.total}
+            awaitingConfirm={mode === "manual" && !answered}
+            canConfirm={s.draft !== undefined}
+            onPrev={s.prev}
+            onNext={s.next}
+            onConfirm={s.confirm}
+          />
+          <FactGuardChat question={s.current} answered={answered} />
         </div>
       )}
     </main>

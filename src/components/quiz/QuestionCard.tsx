@@ -8,10 +8,11 @@ const MARKS = ["①", "②", "③", "④"] as const;
 interface Props {
   question: Question;
   selected?: OptionNumber;
+  pending?: OptionNumber;
   onSelect: (option: OptionNumber) => void;
 }
 
-export function QuestionCard({ question, selected, onSelect }: Props) {
+export function QuestionCard({ question, selected, pending, onSelect }: Props) {
   const answered = selected !== undefined;
   const correct = answered && selected === question.answer;
 
@@ -22,7 +23,7 @@ export function QuestionCard({ question, selected, onSelect }: Props) {
         <h2 className="mt-3 text-[16px] font-semibold leading-[1.75] tracking-tight text-ink">{question.question}</h2>
       </div>
 
-      <OptionList options={question.options} selected={selected} answer={question.answer} onSelect={onSelect} />
+      <OptionList options={question.options} selected={selected} pending={pending} answer={question.answer} onSelect={onSelect} />
 
       {answered && (
         <section

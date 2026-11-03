@@ -5,6 +5,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { progressKey, readJson, removeKey, writeJson } from "@/lib/storage/safe-storage";
 import type { OptionNumber, Question } from "@/types/question";
 
+import type { QuizMode } from "./useQuizMode";
+
 type Picks = Record<string, OptionNumber>;
 
 interface StoredProgress {
@@ -33,12 +35,14 @@ export function computeStats(questions: Question[], picks: Picks): QuizStats {
 }
 
 /** Quiz navigation + grading state for one part, persisted per device. */
-export function useQuizSession(partNo: number, questions: Question[]) {
+export function useQuizSession(partNo: number, questions: Question[], mode: QuizMode = "auto") {
   const [picks, setPicks] = useState<Picks>({});
   const [order, setOrder] = useState<string[]>(() => questions.map((q) => q.id));
   const [cursor, setCursor] = useState(0);
   const [finished, setFinished] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  // manual 모드에서 '정답 확인' 전까지 바꿔 고를 수 있는 임시 선택
+  const [draft, setDraft] = useState<OptionNumber | undefined>(undefined);
 
   const byId = useMemo(() => new Map(questions.map((q) => [q.id, q])), [questions]);
 
@@ -61,10 +65,29 @@ export function useQuizSession(partNo: number, questions: Question[]) {
   const current = byId.get(order[cursor]) ?? questions[0];
   const selected = picks[current.id];
 
-  const select = useCallback(
+  useEffect(() => {
+    setDraft(undefined);
+  }, [current.id]);
+
+  const commit = useCallback(
     (option: OptionNumber) => setPicks((prev) => (prev[current.id] ? prev : { ...prev, [current.id]: option })),
     [current.id],
   );
+
+  /** auto: 누르는 즉시 채점 · manual: 임시 선택만 바꿈 */
+  const select = useCallback(
+    (option: OptionNumber) => {
+      if (selected !== undefined) return;
+      if (mode === "auto") commit(option);
+      else setDraft(option);
+    },
+    [commit, mode, selected],
+  );
+
+  /** manual: 임시 선택을 확정해 채점 */
+  const confirm = useCallback(() => {
+    if (draft !== undefined) commit(draft);
+  }, [commit, draft]);
 
   const next = useCallback(() => {
     if (cursor >= order.length - 1) setFinished(true);
@@ -96,12 +119,14 @@ export function useQuizSession(partNo: number, questions: Question[]) {
     hydrated,
     current,
     selected,
+    draft: selected === undefined ? draft : undefined,
     position: cursor + 1,
     total: order.length,
     isReview: order.length !== questions.length,
     finished,
     stats,
     select,
+    confirm,
     next,
     prev,
     retryWrong,
