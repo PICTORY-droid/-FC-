@@ -1,4 +1,5 @@
 import { PartCard } from "@/components/home/PartCard";
+import { InstallAppCard } from "@/components/pwa/InstallAppCard";
 import { getSource, listParts } from "@/lib/question-bank/repository";
 
 export default function HomePage() {
@@ -21,6 +22,8 @@ export default function HomePage() {
           교재 원문 기반 {total}문항. 풀이 즉시 채점과 해설, 문항 범위 안에서만 답하는 AI 도우미를 함께 제공합니다.
         </p>
       </header>
+
+      <InstallAppCard />
 
       <section aria-label="파트 선택" className="flex flex-col gap-3">
         {parts.map((p) => (
