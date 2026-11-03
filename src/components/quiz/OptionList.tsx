@@ -6,7 +6,7 @@ interface Props {
   options: readonly string[];
   /** 확정된(채점된) 선택 */
   selected?: OptionNumber;
-  /** 직접 확인 모드에서 '정답 확인' 전 임시 선택 */
+  /** 직접 정답 확인 모드에서 '정답 확인' 전 임시 선택 */
   pending?: OptionNumber;
   answer: OptionNumber;
   onSelect: (option: OptionNumber) => void;

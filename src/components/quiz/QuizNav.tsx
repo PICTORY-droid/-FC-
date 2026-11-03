@@ -1,7 +1,7 @@
 interface Props {
   canPrev: boolean;
   isLast: boolean;
-  /** 직접 확인 모드에서 아직 채점 전인 문항 */
+  /** 직접 정답 확인 모드에서 아직 채점 전인 문항 */
   awaitingConfirm: boolean;
   canConfirm: boolean;
   onPrev: () => void;

@@ -11,7 +11,7 @@ export function ModePicker() {
   return (
     <section aria-labelledby="mode-title" className="mb-5">
       <h2 id="mode-title" className="mb-2 font-cute text-[16px] text-ink">
-        채점 방식을 골라 주세요
+        채점 방식
       </h2>
       <div role="radiogroup" aria-labelledby="mode-title" className="grid grid-cols-2 gap-2.5">
         {ORDER.map((value) => {
@@ -38,7 +38,6 @@ export function ModePicker() {
                 </span>
                 <span className={`text-sm font-bold ${active ? "text-post" : "text-ink"}`}>{QUIZ_MODES[value].label}</span>
               </span>
-              <span className="mt-1.5 block text-[11px] leading-snug text-ink-soft">{QUIZ_MODES[value].description}</span>
             </button>
           );
         })}
