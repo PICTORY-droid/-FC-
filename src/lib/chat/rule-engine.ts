@@ -383,8 +383,12 @@ export function replyTo(input: EngineInput): EngineReply {
 }
 
 /** Quick-question chips that the engine is guaranteed to understand. */
-export function suggestionsFor(answered: boolean, q: Question): string[] {
+/**
+ * 추천 질문 칩. 틀렸으면 내가 고른 선지를 묻고, 맞혔으면 개념 질문을 권함.
+ * @param picked 화면에 보이는 번호 기준으로 고른 선지
+ */
+export function suggestionsFor(answered: boolean, q: Question, picked?: OptionNumber): string[] {
   if (!answered) return ["힌트 줘", "이 문제 핵심 개념이 뭐야?"];
-  const wrong = ([1, 2, 3, 4] as OptionNumber[]).find((n) => n !== q.answer)!;
-  return ["왜 이게 정답이야?", `${MARKS[wrong - 1]}번은 왜 틀려?`];
+  if (picked !== undefined && picked !== q.answer) return ["왜 이게 정답이야?", `${MARKS[picked - 1]}번은 왜 틀려?`];
+  return ["왜 이게 정답이야?", "이 문제 핵심 개념이 뭐야?"];
 }

@@ -7,15 +7,17 @@ import { useFactChat } from "@/hooks/useFactChat";
 import { useKeyboardSafeViewport } from "@/hooks/useKeyboardSafeViewport";
 import { suggestionsFor } from "@/lib/chat/rule-engine";
 import { MESSAGE_MAX_LENGTH } from "@/lib/chat/sanitize";
-import type { Question } from "@/types/question";
+import type { OptionNumber, Question } from "@/types/question";
 
 interface Props {
   question: Question;
   partTitle: string;
   answered: boolean;
+  /** 고른 선지 (화면 번호 기준) — 추천 질문에 사용 */
+  picked?: OptionNumber;
 }
 
-export function FactGuardChat({ question, partTitle, answered }: Props) {
+export function FactGuardChat({ question, partTitle, answered, picked }: Props) {
   const { turns, status, error, ask } = useFactChat(question, partTitle, answered);
   const [draft, setDraft] = useState("");
   const zoneRef = useRef<HTMLElement>(null);
@@ -81,7 +83,7 @@ export function FactGuardChat({ question, partTitle, answered }: Props) {
       </div>
 
       <div className="flex flex-wrap gap-1.5">
-        {suggestionsFor(answered, question).map((s) => (
+        {suggestionsFor(answered, question, picked).map((s) => (
           <button
             key={s}
             type="button"

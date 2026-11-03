@@ -47,7 +47,7 @@ export function SolveStep({ runner: s, mode, partTitle, partLabel }: Props) {
         onNext={s.next}
         onConfirm={s.confirm}
       />
-      <FactGuardChat question={view.question} partTitle={partTitle} answered={answered} />
+      <FactGuardChat question={view.question} partTitle={partTitle} answered={answered} picked={view.toShown(s.selected)} />
     </div>
   );
 }
