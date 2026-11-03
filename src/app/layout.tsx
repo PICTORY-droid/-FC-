@@ -1,14 +1,33 @@
 import type { Metadata, Viewport } from "next";
 
 import { ServiceWorkerRegistrar } from "@/components/pwa/ServiceWorkerRegistrar";
-import { APP_ICONS } from "@/lib/brand/assets";
+import { APP_ICONS, SHARE_IMAGE, siteUrl } from "@/lib/brand/assets";
 
 import "./globals.css";
 
+const SHARE_TITLE = "우체국 FC 문제은행";
+const SHARE_DESCRIPTION = "교재 원문 240문항을 풀고 바로 채점 · 해설! 궁금한 건 누리 도우미에게 물어보세요 💌";
+
 export const metadata: Metadata = {
-  title: { default: "우체국 FC 문제은행", template: "%s · FC 문제은행" },
-  description: "우체국보험 개론 평가시험 문제은행 240문항 모바일 학습과 교재 기반 도우미",
+  metadataBase: siteUrl(),
+  title: { default: SHARE_TITLE, template: "%s · FC 문제은행" },
+  description: SHARE_DESCRIPTION,
   applicationName: "FC 문제은행",
+  openGraph: {
+    type: "website",
+    locale: "ko_KR",
+    url: "/",
+    siteName: SHARE_TITLE,
+    title: SHARE_TITLE,
+    description: SHARE_DESCRIPTION,
+    images: [SHARE_IMAGE],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SHARE_TITLE,
+    description: SHARE_DESCRIPTION,
+    images: [SHARE_IMAGE.url],
+  },
   robots: { index: false, follow: false },
   authors: [{ name: "김서인" }],
   icons: {

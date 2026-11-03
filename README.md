@@ -43,6 +43,7 @@ npm run dev   # http://localhost:3000
 data/raw/                       교재 판독 원본(문항·정답 분리 JSONL)
 scripts/build_question_bank.py  병합 + 무결성 검증 → src/data/question-bank.json
 scripts/build_app_icons.py      앱 아이콘(누리) 생성
+scripts/build_og_image.mjs      링크 공유 미리보기 이미지(public/og-image.png) 생성
 src/
   app/                 페이지 · manifest
   components/{brand,home,quiz,chat,pwa}   UI
