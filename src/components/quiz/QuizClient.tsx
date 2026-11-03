@@ -3,25 +3,22 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-import { FactGuardChat } from "@/components/chat/FactGuardChat";
 import { QUIZ_MODES, useQuizMode } from "@/hooks/useQuizMode";
 import { useQuizSession } from "@/hooks/useQuizSession";
 import type { Part } from "@/types/question";
 
 import { CheerToast } from "./CheerToast";
-import { QuestionCard } from "./QuestionCard";
 import { QuizHeader } from "./QuizHeader";
-import { QuizNav } from "./QuizNav";
 import { ResetNotice } from "./ResetNotice";
 import { ResultPanel } from "./ResultPanel";
 import { ReviewPanel } from "./ReviewPanel";
+import { SolveStep } from "./SolveStep";
 
 const RESET_NOTICE_MS = 1300;
 
 export function QuizClient({ part }: { part: Part }) {
   const { mode } = useQuizMode();
   const s = useQuizSession(part.part, part.questions, mode);
-  const answered = s.selected !== undefined;
   const router = useRouter();
   const [reviewing, setReviewing] = useState(false);
   const [resetting, setResetting] = useState(false);
@@ -48,7 +45,7 @@ export function QuizClient({ part }: { part: Part }) {
       {resetting && <ResetNotice />}
       <CheerToast answered={s.stats.answered} ready={s.hydrated} />
       <QuizHeader
-        partNo={part.part}
+        badge={`PART ${part.part}`}
         title={part.title}
         position={s.position}
         total={s.total}
@@ -81,19 +78,7 @@ export function QuizClient({ part }: { part: Part }) {
           onReview={() => setReviewing(true)}
         />
       ) : (
-        <div className="mt-5 flex flex-col gap-5">
-          <QuestionCard question={s.current} selected={s.selected} pending={s.draft} onSelect={s.select} />
-          <QuizNav
-            canPrev={s.position > 1}
-            isLast={s.position === s.total}
-            awaitingConfirm={mode === "manual" && !answered}
-            canConfirm={s.draft !== undefined}
-            onPrev={s.prev}
-            onNext={s.next}
-            onConfirm={s.confirm}
-          />
-          <FactGuardChat question={s.current} partTitle={part.title} answered={answered} />
-        </div>
+        <SolveStep runner={s} mode={mode} partTitle={part.title} />
       )}
     </main>
   );

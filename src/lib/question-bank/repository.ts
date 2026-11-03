@@ -1,7 +1,7 @@
 import "server-only";
 
 import bankJson from "@/data/question-bank.json";
-import type { Part, PartSummary, Question, QuestionBank } from "@/types/question";
+import type { OptionNumber, Part, PartSummary, Question, QuestionBank } from "@/types/question";
 
 const bank = bankJson as QuestionBank;
 
@@ -31,4 +31,14 @@ export function getQuestionById(id: string): { part: Part; question: Question } 
   if (!part) return null;
   const question = part.questions.find((q) => q.id === id);
   return question ? { part, question } : null;
+}
+
+/** Every PART with its questions — for menus that mix questions across PARTs. */
+export function listFullParts(): Part[] {
+  return bank.parts;
+}
+
+/** question id → correct option, for screens that only need grading data. */
+export function answerKey(): Record<string, OptionNumber> {
+  return Object.fromEntries(bank.parts.flatMap((p) => p.questions.map((q) => [q.id, q.answer])));
 }

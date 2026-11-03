@@ -1,7 +1,8 @@
 import Link from "next/link";
 
 interface Props {
-  partNo: number;
+  /** 오른쪽 위 칩 (예: "PART 1", "오답노트") */
+  badge: string;
   title: string;
   position: number;
   total: number;
@@ -9,19 +10,22 @@ interface Props {
   answered: number;
   isReview: boolean;
   modeLabel: string;
+  /** 왼쪽 위 돌아가기 링크 */
+  backHref?: string;
+  backLabel?: string;
 }
 
-export function QuizHeader({ partNo, title, position, total, correct, answered, isReview, modeLabel }: Props) {
+export function QuizHeader({ badge, title, position, total, correct, answered, isReview, modeLabel, backHref = "/", backLabel = "← 목록" }: Props) {
   return (
     <header className="sticky top-0 z-10 -mx-4 bg-canvas/95 px-4 pb-3 pt-[max(env(safe-area-inset-top),0.75rem)] backdrop-blur">
       <div className="flex items-center justify-between">
-        <Link href="/" className="btn-ghost px-3 py-1.5 text-xs" aria-label="파트 목록으로">
-          ← 목록
+        <Link href={backHref} className="btn-ghost px-3 py-1.5 text-xs" aria-label="이전 화면으로">
+          {backLabel}
         </Link>
         <div className="flex items-center gap-1.5">
           {isReview && <span className="chip bg-signal-soft text-signal">오답 다시풀기</span>}
           <span className="chip bg-sunny-soft text-ink-soft">{modeLabel}</span>
-          <span className="chip bg-post-soft text-post">PART {partNo}</span>
+          <span className="chip bg-post-soft text-post">{badge}</span>
         </div>
       </div>
       <div className="mt-2.5 flex items-end justify-between gap-3">

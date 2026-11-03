@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import {
   LAST_PART_KEY,
@@ -11,142 +11,40 @@ import {
   writeJson,
   type LastPart,
 } from "@/lib/storage/safe-storage";
-import type { OptionNumber, Question } from "@/types/question";
+import { orderIds } from "@/lib/study/shuffle";
+import type { Question } from "@/types/question";
 
 import type { QuizMode } from "./useQuizMode";
+import { useQuestionRunner, type RunnerState, type RunnerStorage } from "./useQuestionRunner";
+import { useShuffleSetting } from "./useStudyData";
 
-type Picks = Record<string, OptionNumber>;
+export { computeStats, type QuizStats } from "@/lib/quiz/stats";
 
-interface StoredProgress {
-  picks: Picks;
-  cursor: number;
-}
-
-export interface QuizStats {
-  answered: number;
-  correct: number;
-  wrongIds: string[];
-}
-
-export function computeStats(questions: Question[], picks: Picks): QuizStats {
-  let answered = 0;
-  let correct = 0;
-  const wrongIds: string[] = [];
-  for (const q of questions) {
-    const pick = picks[q.id];
-    if (pick === undefined) continue;
-    answered += 1;
-    if (pick === q.answer) correct += 1;
-    else wrongIds.push(q.id);
-  }
-  return { answered, correct, wrongIds };
-}
-
-/** Quiz navigation + grading state for one part, persisted per device. */
+/** One PART solved in book order (or the device's shuffled order), saved per device. */
 export function useQuizSession(partNo: number, questions: Question[], mode: QuizMode = "auto") {
-  const [picks, setPicks] = useState<Picks>({});
-  const [order, setOrder] = useState<string[]>(() => questions.map((q) => q.id));
-  const [cursor, setCursor] = useState(0);
-  const [finished, setFinished] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
-  // manual 모드에서 '정답 확인' 전까지 바꿔 고를 수 있는 임시 선택
-  const [draft, setDraft] = useState<OptionNumber | undefined>(undefined);
+  const { setting, loaded } = useShuffleSetting();
 
-  const byId = useMemo(() => new Map(questions.map((q) => [q.id, q])), [questions]);
-
-  useEffect(() => {
-    const saved = readJson<StoredProgress | null>(progressKey(partNo), null);
-    if (saved?.picks) {
-      const valid = Object.fromEntries(
-        Object.entries(saved.picks).filter(([id, v]) => byId.has(id) && [1, 2, 3, 4].includes(v)),
-      ) as Picks;
-      setPicks(valid);
-      if (Number.isInteger(saved.cursor)) setCursor(Math.min(Math.max(saved.cursor, 0), questions.length - 1));
-    }
-    setHydrated(true);
-  }, [partNo, byId, questions.length]);
-
-  useEffect(() => {
-    if (hydrated && order.length === questions.length) {
-      writeJson(progressKey(partNo), { picks, cursor });
-      if (Object.keys(picks).length > 0) writeJson(LAST_PART_KEY, { part: partNo, at: Date.now() } satisfies LastPart);
-    }
-  }, [hydrated, partNo, picks, cursor, order.length, questions.length]);
-
-  const current = byId.get(order[cursor]) ?? questions[0];
-  const selected = picks[current.id];
-
-  useEffect(() => {
-    setDraft(undefined);
-  }, [current.id]);
-
-  const commit = useCallback(
-    (option: OptionNumber) => setPicks((prev) => (prev[current.id] ? prev : { ...prev, [current.id]: option })),
-    [current.id],
+  const storage = useMemo<RunnerStorage>(
+    () => ({
+      load: () => readJson<RunnerState | null>(progressKey(partNo), null),
+      save: (state) => {
+        writeJson(progressKey(partNo), state);
+        if (Object.keys(state.picks).length > 0) writeJson(LAST_PART_KEY, { part: partNo, at: Date.now() } satisfies LastPart);
+      },
+      /** 초기화: 이 PART의 풀이 기록과 '이어풀기' 안내를 지움 */
+      clear: () => {
+        removeKey(progressKey(partNo));
+        if (readJson<LastPart | null>(LAST_PART_KEY, null)?.part === partNo) removeKey(LAST_PART_KEY);
+        window.dispatchEvent(new Event(PROGRESS_CHANGED_EVENT));
+        window.scrollTo({ top: 0 });
+      },
+    }),
+    [partNo],
   );
 
-  /** auto: 누르는 즉시 채점 · manual: 임시 선택만 바꿈 */
-  const select = useCallback(
-    (option: OptionNumber) => {
-      if (selected !== undefined) return;
-      if (mode === "auto") commit(option);
-      else setDraft(option);
-    },
-    [commit, mode, selected],
-  );
+  const ids = useMemo(() => questions.map((q) => q.id), [questions]);
+  const order = useMemo(() => orderIds(ids, setting, `part${partNo}`), [ids, setting, partNo]);
+  const runner = useQuestionRunner(questions, order, mode, storage);
 
-  /** manual: 임시 선택을 확정해 채점 */
-  const confirm = useCallback(() => {
-    if (draft !== undefined) commit(draft);
-  }, [commit, draft]);
-
-  const next = useCallback(() => {
-    if (cursor >= order.length - 1) setFinished(true);
-    else setCursor((c) => c + 1);
-  }, [cursor, order.length]);
-
-  const prev = useCallback(() => setCursor((c) => Math.max(c - 1, 0)), []);
-
-  const retryWrong = useCallback(() => {
-    const wrong = computeStats(questions, picks).wrongIds;
-    if (wrong.length === 0) return;
-    setPicks((prev) => Object.fromEntries(Object.entries(prev).filter(([id]) => !wrong.includes(id))) as Picks);
-    setOrder(wrong);
-    setCursor(0);
-    setFinished(false);
-  }, [questions, picks]);
-
-  /** 초기화: 이 PART의 풀이 기록과 '이어풀기' 안내를 지우고 1번부터 다시 */
-  const restart = useCallback(() => {
-    removeKey(progressKey(partNo));
-    if (readJson<LastPart | null>(LAST_PART_KEY, null)?.part === partNo) removeKey(LAST_PART_KEY);
-    window.dispatchEvent(new Event(PROGRESS_CHANGED_EVENT));
-    window.scrollTo({ top: 0 });
-    setDraft(undefined);
-    setPicks({});
-    setOrder(questions.map((q) => q.id));
-    setCursor(0);
-    setFinished(false);
-  }, [partNo, questions]);
-
-  const stats = useMemo(() => computeStats(questions, picks), [questions, picks]);
-
-  return {
-    hydrated,
-    current,
-    selected,
-    draft: selected === undefined ? draft : undefined,
-    position: cursor + 1,
-    total: order.length,
-    isReview: order.length !== questions.length,
-    finished,
-    stats,
-    picks,
-    select,
-    confirm,
-    next,
-    prev,
-    retryWrong,
-    restart,
-  };
+  return { ...runner, hydrated: runner.hydrated && loaded };
 }

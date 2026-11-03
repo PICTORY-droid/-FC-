@@ -2,8 +2,10 @@ import { Mascot } from "@/components/brand/Mascot";
 import { ModePicker } from "@/components/home/ModePicker";
 import { PartCard } from "@/components/home/PartCard";
 import { ResumePrompt } from "@/components/home/ResumePrompt";
+import { ShuffleToggle } from "@/components/home/ShuffleToggle";
+import { StudyMenu } from "@/components/home/StudyMenu";
 import { InstallAppCard } from "@/components/pwa/InstallAppCard";
-import { getSource, listParts } from "@/lib/question-bank/repository";
+import { answerKey, getSource, listParts } from "@/lib/question-bank/repository";
 
 export default function HomePage() {
   const parts = listParts();
@@ -22,9 +24,12 @@ export default function HomePage() {
 
       <InstallAppCard />
 
-      <ModePicker />
+      <StudyMenu answers={answerKey()} />
 
-      <section aria-label="파트 선택" className="flex flex-col gap-3">
+      <ModePicker />
+      <ShuffleToggle />
+
+      <section aria-label="파트 선택" className="mt-5 flex flex-col gap-3">
         {parts.map((p) => (
           <PartCard key={p.part} part={p} />
         ))}

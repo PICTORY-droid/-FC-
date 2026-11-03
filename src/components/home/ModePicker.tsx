@@ -9,7 +9,7 @@ export function ModePicker() {
   const { mode, setMode } = useQuizMode();
 
   return (
-    <section aria-labelledby="mode-title" className="mb-5">
+    <section aria-labelledby="mode-title">
       <h2 id="mode-title" className="mb-2 font-cute text-[16px] text-ink">
         채점 방식
       </h2>
