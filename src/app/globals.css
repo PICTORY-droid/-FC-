@@ -151,3 +151,23 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* 응원 표시: 살짝 내려왔다가 스스로 사라짐 (총 1.4초) */
+@keyframes cheer-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+  15%,
+  70% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+.cheer-toast {
+  animation: cheer-pop 1.4s ease-out forwards;
+}

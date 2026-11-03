@@ -64,28 +64,24 @@ export function ResumePrompt({ parts }: { parts: PartSummary[] }) {
       role="dialog"
       aria-modal="true"
       aria-labelledby="resume-title"
-      className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-4 pb-[max(env(safe-area-inset-bottom),1rem)] sm:items-center"
+      className="fixed inset-x-0 bottom-0 z-50 flex justify-center px-4 pb-[max(env(safe-area-inset-bottom),1rem)]"
     >
-      <div className="card w-full max-w-sm overflow-hidden p-6 text-center">
-        <div className="airmail -mx-6 -mt-6 mb-5 rounded-none" aria-hidden />
-        <Mascot size={64} className="mx-auto animate-wiggle" />
-        <h2 id="resume-title" className="mt-3 font-cute text-[22px] text-ink">
-          이어서 문제풀기 할까요?
-        </h2>
-        <p className="mt-2 text-sm text-ink-soft">
-          <b className="text-post">PART {pending.part.part} {pending.part.title}</b>
-          <br />
-          {pending.part.total}문항 중 {pending.answered}문항을 풀었어요. ({pending.position}번째 문항부터)
-        </p>
-        <div className="mt-5 flex gap-3">
-          <button type="button" onClick={restart} className="btn-ghost flex-1 py-3.5 text-sm">
-            처음부터
-          </button>
-          <button type="button" onClick={resume} autoFocus className="btn-primary flex-1 py-3.5 text-sm">
-            예, 이어서 풀기
-          </button>
+      <div className="card flex w-full max-w-sm items-center gap-3 p-3 pl-4">
+        <Mascot size={32} className="shrink-0" />
+        <div className="min-w-0 flex-1">
+          <h2 id="resume-title" className="font-cute text-[15px] leading-tight text-ink">
+            이어서 풀까요?
+          </h2>
+          <p className="truncate text-[11px] text-ink-mute">
+            PART {pending.part.part} · {pending.position}번째 문항부터
+          </p>
         </div>
-        <p className="mt-3 text-[11px] text-ink-mute">'처음부터'를 누르면 이 PART의 풀이 기록이 지워져요.</p>
+        <button type="button" onClick={restart} title="이 PART 기록을 지우고 처음부터" className="btn-ghost shrink-0 px-3 py-2 text-xs">
+          처음부터
+        </button>
+        <button type="button" onClick={resume} autoFocus className="btn-primary shrink-0 px-3 py-2 text-xs">
+          이어풀기
+        </button>
       </div>
     </div>
   );

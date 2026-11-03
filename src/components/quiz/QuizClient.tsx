@@ -7,6 +7,7 @@ import { QUIZ_MODES, useQuizMode } from "@/hooks/useQuizMode";
 import { useQuizSession } from "@/hooks/useQuizSession";
 import type { Part } from "@/types/question";
 
+import { CheerToast } from "./CheerToast";
 import { QuestionCard } from "./QuestionCard";
 import { QuizHeader } from "./QuizHeader";
 import { QuizNav } from "./QuizNav";
@@ -23,6 +24,7 @@ export function QuizClient({ part }: { part: Part }) {
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-4 pb-[max(env(safe-area-inset-bottom),1.5rem)]">
+      <CheerToast answered={s.stats.answered} ready={s.hydrated} />
       <QuizHeader
         partNo={part.part}
         title={part.title}
