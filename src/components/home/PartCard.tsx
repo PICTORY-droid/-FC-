@@ -4,15 +4,20 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { PartIcon } from "@/components/brand/PartIcon";
-import { progressKey, readJson } from "@/lib/storage/safe-storage";
+import { PROGRESS_CHANGED_EVENT, progressKey, readJson } from "@/lib/storage/safe-storage";
 import type { PartSummary } from "@/types/question";
 
 export function PartCard({ part }: { part: PartSummary }) {
   const [answered, setAnswered] = useState(0);
 
   useEffect(() => {
-    const saved = readJson<{ picks?: Record<string, number> } | null>(progressKey(part.part), null);
-    setAnswered(saved?.picks ? Object.keys(saved.picks).length : 0);
+    const load = () => {
+      const saved = readJson<{ picks?: Record<string, number> } | null>(progressKey(part.part), null);
+      setAnswered(saved?.picks ? Object.keys(saved.picks).length : 0);
+    };
+    load();
+    window.addEventListener(PROGRESS_CHANGED_EVENT, load);
+    return () => window.removeEventListener(PROGRESS_CHANGED_EVENT, load);
   }, [part.part]);
 
   const ratio = Math.min(answered / part.total, 1);

@@ -2,6 +2,7 @@ import type { Definition, FactSentence, Knowledge } from "@/types/chat";
 import type { OptionNumber, Question } from "@/types/question";
 
 import { MARKS, compact, josa, pick } from "./korean";
+import { summaryCard } from "./summarize";
 import { citation, findTextbookDefinition, type Textbook, type TextbookPassage } from "./textbook";
 
 export const OUT_OF_SCOPE_REPLY =
@@ -92,7 +93,12 @@ function visibleText(f: FactSentence, q: Question, answered: boolean): string | 
 }
 
 function teach(q: Question, k: Knowledge): string {
-  if (q.explanation) return `교재 해설에는 이렇게 나와 있어요. "${q.explanation}"`;
+  if (q.explanation) {
+    const long = q.explanation.length > 90 && !/[①②③④]/.test(q.explanation);
+    return long
+      ? summaryCard("교재 해설 정리예요.", q.explanation, "문제집 해설")
+      : `교재 해설에는 이렇게 나와 있어요. "${q.explanation}"`;
+  }
   const filled = k.facts.find((f) => f.questionId === q.id && f.hiddenText);
   if (filled) return `문제 문장에 정답을 넣어 읽어 보면 이렇게 정리돼요. "${filled.text}"`;
   return "이 문항은 교재에 별도 해설이 없어요. 정답 선지 문장을 그대로 기억해 두시면 좋아요.";
@@ -195,7 +201,7 @@ function questionTopic(q: Question, k: Knowledge, tb: Textbook): string | null {
 }
 
 function crossAsk(term: string, partTitle: string): string {
-  return ` 지금 푸는 '${partTitle}' 문제와 어떤 연관이 궁금하세요? 궁금한 점을 적어 주시면 교재에서 두 내용이 함께 나오는 부분을 찾아드릴게요 📮`;
+  return `\n\n지금 푸는 '${partTitle}' 문제와 어떤 연관이 궁금하세요? 궁금한 점을 적어 주시면 교재에서 두 내용이 함께 나오는 부분을 찾아드릴게요 📮`;
 }
 
 function answerTerm(msg: string, input: EngineInput): EngineReply | null {
@@ -208,7 +214,7 @@ function answerTerm(msg: string, input: EngineInput): EngineReply | null {
   if (tdef && safeText(tdef.text, q, answered)) {
     const cross = tdef.partTitle !== partTitle;
     return {
-      text: `'${tdef.term}', 교재에서는 이렇게 설명해요. "${tdef.text}" (${citation(tdef)})${cross ? crossAsk(tdef.term, partTitle) : ""}`,
+      text: `${summaryCard(`'${tdef.term}' 핵심 정리예요 ✉️`, tdef.text, citation(tdef), tdef.term)}${cross ? crossAsk(tdef.term, partTitle) : ""}`,
       pendingTopic: cross ? tdef.term : null,
     };
   }
@@ -220,7 +226,7 @@ function answerTerm(msg: string, input: EngineInput): EngineReply | null {
   if (passage) {
     const cross = passage.part !== part;
     return {
-      text: `${josa(`'${term}'`, "은/는")} 교재에 이렇게 나와요. "${passage.text}" (${citation(passage)})${cross ? crossAsk(term, partTitle) : ""}`,
+      text: `${summaryCard(`'${term}' 교재 내용 정리예요 ✉️`, passage.text, citation(passage), term)}${cross ? crossAsk(term, partTitle) : ""}`,
       pendingTopic: cross ? term : null,
     };
   }
@@ -247,9 +253,9 @@ function relationTopics(msg: string): string[] {
 function describe(topic: string, input: EngineInput): string | null {
   const { question: q, answered, textbook: tb } = input;
   const d = findTextbookDefinition(topic, tb);
-  if (d && safeText(d.text, q, answered)) return `'${d.term}': "${d.text}" (${citation(d)})`;
+  if (d && safeText(d.text, q, answered)) return summaryCard(`'${d.term}'`, d.text, citation(d), d.term);
   const p = bestPassage(topic, tb, q, answered);
-  return p ? `'${topic}': "${p.text}" (${citation(p)})` : null;
+  return p ? summaryCard(`'${topic}'`, p.text, citation(p), topic) : null;
 }
 
 /** "언더라이팅이랑 이 문제 무슨 관계야?" — finds textbook passages that mention both topics. */
@@ -266,9 +272,11 @@ function answerRelation(msg: string, topicA: string, named: string | null, input
       return t.includes(a) && t.includes(b) && safeText(p.text, q, answered);
     });
     if (both.length > 0) {
-      const picked = both.sort((x, y) => x.text.length - y.text.length).slice(0, 2);
-      const lines = picked.map((p) => `"${p.text}" (${citation(p)})`).join(" 그리고 ");
-      return { text: `${josa(`'${topicA}'`, "와/과")} ${josa(`'${topicB}'`, "이/가")} 함께 나오는 교재 내용이에요. ${lines}`, pendingTopic: null };
+      const p0 = both.sort((x, y) => x.text.length - y.text.length)[0];
+      return {
+        text: summaryCard(`${josa(`'${topicA}'`, "와/과")} ${josa(`'${topicB}'`, "이/가")} 함께 나오는 교재 내용이에요 ✉️`, p0.text, citation(p0)),
+        pendingTopic: null,
+      };
     }
     // 같은 단원(절)에서 두 번째 용어를 다룬 문단 — 교재가 한 묶음으로 설명하는 내용
     const home = findTextbookDefinition(topicA, tb) ?? bestPassage(topicA, tb, q, answered);
@@ -280,14 +288,17 @@ function answerRelation(msg: string, topicA: string, named: string | null, input
       if (near) {
         const unit = chapter.split(" · ").slice(-1)[0];
         return {
-          text: `${josa(`'${topicA}'`, "을/를")} 다루는 교재 같은 단원(${unit})에서 ${josa(`'${topicB}'`, "이/가")} 이렇게 함께 나와요. "${near.text}" (${citation(near)}) ${describe(topicA, input) ?? ""}`.trim(),
+          text: [
+            summaryCard(`${josa(`'${topicA}'`, "을/를")} 다루는 같은 단원(${unit})에 ${josa(`'${topicB}'`, "이/가")} 함께 나와요 ✉️`, near.text, citation(near)),
+            describe(topicA, input),
+          ].filter(Boolean).join("\n\n"),
           pendingTopic: null,
         };
       }
     }
-    const each = [describe(topicA, input), describe(topicB, input)].filter(Boolean).join(" / ");
+    const each = [describe(topicA, input), describe(topicB, input)].filter(Boolean).join("\n\n");
     return {
-      text: `교재에서 ${josa(`'${topicA}'`, "와/과")} ${josa(`'${topicB}'`, "을/를")} 한 문단에서 직접 연결해 설명한 부분은 없어요. 제가 임의로 엮어 말씀드리면 사실과 다를 수 있어서, 각각의 교재 설명을 드릴게요.${each ? ` ${each}` : ""}`,
+      text: `교재에서 ${josa(`'${topicA}'`, "와/과")} ${josa(`'${topicB}'`, "을/를")} 직접 연결해 설명한 부분은 없어요. 제가 임의로 엮으면 사실과 다를 수 있어서, 각각 정리해 드릴게요 ✉️${each ? `\n\n${each}` : ""}`,
       pendingTopic: null,
     };
   }

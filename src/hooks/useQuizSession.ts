@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { progressKey, readJson, removeKey, writeJson } from "@/lib/storage/safe-storage";
+import { LAST_PART_KEY, progressKey, readJson, removeKey, writeJson, type LastPart } from "@/lib/storage/safe-storage";
 import type { OptionNumber, Question } from "@/types/question";
 
 import type { QuizMode } from "./useQuizMode";
@@ -59,7 +59,10 @@ export function useQuizSession(partNo: number, questions: Question[], mode: Quiz
   }, [partNo, byId, questions.length]);
 
   useEffect(() => {
-    if (hydrated && order.length === questions.length) writeJson(progressKey(partNo), { picks, cursor });
+    if (hydrated && order.length === questions.length) {
+      writeJson(progressKey(partNo), { picks, cursor });
+      if (Object.keys(picks).length > 0) writeJson(LAST_PART_KEY, { part: partNo, at: Date.now() } satisfies LastPart);
+    }
   }, [hydrated, partNo, picks, cursor, order.length, questions.length]);
 
   const current = byId.get(order[cursor]) ?? questions[0];

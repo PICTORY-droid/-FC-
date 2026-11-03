@@ -1,12 +1,12 @@
 import { Mascot } from "@/components/brand/Mascot";
 import { ModePicker } from "@/components/home/ModePicker";
 import { PartCard } from "@/components/home/PartCard";
+import { ResumePrompt } from "@/components/home/ResumePrompt";
 import { InstallAppCard } from "@/components/pwa/InstallAppCard";
 import { getSource, listParts } from "@/lib/question-bank/repository";
 
 export default function HomePage() {
   const parts = listParts();
-  const total = parts.reduce((sum, p) => sum + p.total, 0);
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-4 pb-10 pt-[max(env(safe-area-inset-top),1.75rem)]">
@@ -16,11 +16,9 @@ export default function HomePage() {
           <h1 className="font-cute text-[28px] leading-tight text-post">우체국 FC 문제은행</h1>
         </div>
         <div className="airmail mt-5" aria-hidden />
-        <p className="mt-4 text-sm leading-relaxed text-ink-soft">
-          교재 원문 그대로 담은 <b className="text-ink">{total}문항</b>이에요. 풀면 바로 채점하고 해설을 보여드려요. 궁금한 건
-          누리 도우미에게 물어보세요 💌
-        </p>
       </header>
+
+      <ResumePrompt parts={parts} />
 
       <InstallAppCard />
 
